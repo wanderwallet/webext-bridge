@@ -19,9 +19,23 @@ export const isInternalEndpoint = ({ context: ctx }: Endpoint): boolean => ['con
 export const hasAPI = (nsps: string): boolean => browser[nsps]
 
 export const getBackgroundPageType = () => {
-  const manifest: Manifest.WebExtensionManifest = browser.runtime.getManifest()
-
   if (typeof window === 'undefined') return 'background'
+
+  const currentUrl = new URL(window.location.href);
+
+  try {
+    if (browser.extension.getBackgroundPage?.() === window) return "background";
+
+    // Firefox MV3 default generated background page
+    if (
+      currentUrl.protocol === "moz-extension:" &&
+      currentUrl.pathname === "/_generated_background_page.html"
+    ) {
+      return "background";
+    }
+  } catch {}
+
+  const manifest: Manifest.WebExtensionManifest = browser.runtime.getManifest();
 
   const popupPage = manifest.browser_action?.default_popup || manifest.action?.default_popup
   if (popupPage) {
@@ -34,10 +48,12 @@ export const getBackgroundPageType = () => {
     if (url.pathname === window.location.pathname) return 'options'
   }
 
-  const url = new URL(window.location.href)
-  if (url.protocol === 'chrome-extension:' || url.protocol === 'moz-extension:') {
-    const extensionId = browser.runtime.id
-    if (extensionId === url.host) return 'web_accessible'
+  if (currentUrl.protocol === 'chrome-extension:' || currentUrl.protocol === 'moz-extension:') {
+    const extensionId =
+      currentUrl.protocol === "chrome-extension:"
+        ? browser.runtime.id
+        : new URL(browser.runtime.getURL("")).host;
+    if (extensionId === currentUrl.host) return "web_accessible";
   }
 
   return 'background'

@@ -1,5 +1,5 @@
 {
-  "name": "@arconnect/webext-bridge",
+  "name": "@wanderapp/webext-bridge",
   "version": "5.0.6",
   "description": "Messaging in Web Extensions made easy. Out of the box.",
   "keywords": [
@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/arconnectio/webext-bridge.git"
+    "url": "git+https://github.com/wanderwallet/webext-bridge.git"
   },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
